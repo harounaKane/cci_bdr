@@ -46,3 +46,13 @@ CREATE TABLE compose(
    FOREIGN KEY(stage) REFERENCES stage(code),
    FOREIGN KEY(matiere) REFERENCES matiere(code)
 );
+
+
+CREATE TABLE personne(
+   id_personne INT PRIMARY KEY AUTO_INCREMENT,
+   prenom VARCHAR(20),
+   adresse VARCHAR(50), 
+   cp INT(5),
+   ville VARCHAR(30),
+   tel VARCHAR(15)
+);
