@@ -1,3 +1,5 @@
+        -- JOINTURES 
+
 -- Q1 — Afficher nom, prénom de chaque stagiaire avec le libellé du stage auquel il est inscrit.
 SELECT nom, prenom, libelle AS stage
 FROM stagiaire
@@ -94,3 +96,74 @@ INNER JOIN professeur
 ON professeur.id = professeur_id
 AND nom = "martin"
 AND prenom = "sophie";
+
+
+-- AGREGATIONS
+
+-- Q11 — Pour chaque stage, afficher le nombre de matières qui le composent et son coût.
+SELECT 
+    stage.libelle as stage,
+    COUNT(sm.matiere_id) as nb_matiere,
+    cout
+FROM stage 
+INNER JOIN stage_matiere as sm
+ON stage_id = stage.id
+GROUP BY stage.id, stage, cout;
+
+-- Q12 — Afficher les professeurs qui enseignent strictement plus de 2 matières.
+SELECT prenom, nom, COUNT(professeur_id) nb_matiere
+FROM professeur
+INNER JOIN matiere
+ON professeur_id = professeur.id
+GROUP BY professeur.id
+HAVING COUNT(nb_matiere) > 2;
+
+-- Q13 — Compter le nombre de stagiaires inscrits par stage, du plus rempli au moins rempli.
+SELECT libelle as stage, COUNT(stagiaire_id) nb_stagiaire
+FROM stage 
+LEFT JOIN stagiaire_stage
+ON stage_id = id
+GROUP BY id
+ORDER BY nb_stagiaire DESC;
+
+-- Q14 — Lister les stages entre 1200 € et 1800 € ayant au moins 6 inscrits.
+SELECT libelle as stage, COUNT(stagiaire_id) nb_stagiaire, cout
+FROM stage 
+LEFT JOIN stagiaire_stage
+ON stage_id = id
+AND cout BETWEEN 1200 AND 1800
+GROUP BY id
+HAVING COUNT(nb_stagiaire) >= 6
+ORDER BY nb_stagiaire DESC;
+
+-- Q15 — Afficher TOUS les stages avec leur nombre d'inscrits, y compris ceux à 0.
+SELECT libelle as stage, COUNT(stagiaire_id) nb_stagiaire, cout
+FROM stage 
+LEFT JOIN stagiaire_stage
+ON stage_id = id
+GROUP BY id
+ORDER BY nb_stagiaire DESC;
+
+-- Q16 — Afficher les stagiaires inscrits à plus d'un stage avec le nombre de stages suivis.
+SELECT prenom, nom, COUNT(stagiaire_id) nb_inscription
+FROM stagiaire
+INNER JOIN stagiaire_stage
+ON stagiaire_id = id
+GROUP by id
+HAVING COUNT(nb_inscription) > 1;
+
+-- Q17 — Par professeur : nb de matières, nb de stages concernés et chiffre d'affaires potentiel.
+SELECT
+    prenom, nom,
+    COUNT(matiere.id) AS nb_matiere,
+    COUNT(stage_id) AS nb_stage,
+    SUM(cout) AS CA
+FROM stage 
+INNER JOIN stage_matiere 
+ON stage_id = stage.id
+INNER JOIN matiere
+ON matiere.id = matiere_id
+INNER JOIN professeur
+ON professeur_id = professeur.id
+GROUP BY professeur.id, matiere.libelle
+ORDER BY CA ASC;
