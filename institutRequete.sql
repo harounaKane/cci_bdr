@@ -167,3 +167,65 @@ INNER JOIN professeur
 ON professeur_id = professeur.id
 GROUP BY professeur.id, matiere.libelle
 ORDER BY CA ASC;
+
+
+
+-- Pivo SQL
+SELECT 
+	dept.nom AS departement,
+    sum( CASE WHEN fonction = "administratif" THEN 1 ELSE 0 END ) AS admin, 
+    sum( CASE WHEN fonction = "commercial" THEN 1 ELSE 0 END ) AS vendeur, 
+    sum( CASE WHEN fonction = "ingénieur" THEN 1 ELSE 0 END ) AS ingénieur, 
+    sum( CASE WHEN fonction = "directeur" THEN 1 ELSE 0 END ) AS DG, 
+    sum( CASE WHEN fonction = "président" THEN 1 ELSE 0 END ) AS prési, 
+    COUNT(num_dept) AS Total
+FROM dept
+LEFT JOIN employe
+ON num_dept = n_dept
+GROUP BY n_dept, departement
+ORDER BY departement;
+
+-- Q18 — Afficher chaque stage avec son libellé et une colonne tarif qui affiche : "Économique" si cout < 1200, "Standard" si entre 1200 et 1800, "Premium" si > 1800.
+SELECT 
+    stage.libelle AS stage,
+    cout,
+    CASE
+        WHEN cout < 1200 THEN "Économique"
+        WHEN cout BETWEEN 1200 AND 1800 THEN "Standard"
+        ELSE "Premium"
+    END AS tarif
+FROM stage 
+ORDER By cout;
+
+-- Q19 — Afficher chaque stagiaire avec son nom, prénom et une colonne zone : "Paris" si cp entre 75001 et 75999, "Petite Couronne" si cp entre 92000 et 94999, "Grande Couronne" pour le reste.
+SELECT 
+    prenom,
+    nom,
+    CASE
+        WHEN cp BETWEEN 75001 AND 75999 THEN "Paris"
+        WHEN cp BETWEEN 92000 AND 94999 THEN "Petite Couronne"
+        ELSE "Grande Couronne"
+    END AS `zone`
+FROM stagiaire
+ORDER BY `zone`;
+
+-- Q20 — Afficher chaque professeur avec son nom, le nombre de matières qu'il enseigne et une colonne charge : "Légère" si 1 matière, "Normale" si 2 ou 3, "Élevée" si 4 et plus.
+SELECT 
+    prenom,
+    nom,
+    CASE   
+        WHEN COUNT(m.id) = 1 THEN "Légère"
+        WHEN COUNT(m.id) BETWEEN 1 AND 3 THEN "Normale"
+        ELSE "Élevée"
+    END AS charge
+FROM professeur 
+INNER JOIN matiere As m
+ON professeur_id = professeur.id
+GROUP BY professeur.id, prenom, nom
+ORDER By charge;
+
+
+-- Q21 — Afficher pour chaque stage son libellé, le nombre d'inscrits et une colonne remplissage : "Vide" si 0, "Peu rempli" si 1 à 4, "Bien rempli" si 5 à 7, "Complet" si 8 et plus.
+
+
+-- Q22 — Afficher chaque stagiaire avec son nom, prénom, le nombre de stages suivis et une colonne profil : "Novice" si 1 stage, "Actif" si 2 stages, "Très actif" si 3 et plus. Inclure uniquement les stagiaires ayant au moins une inscription.
